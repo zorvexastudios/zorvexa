@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="cyber-violet">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZORVEXA STUDIOS // Official Game Studio</title>
+  <meta name="description" content="ZORVEXA STUDIOS — Independent solo game studio. Download Number Battle: Guess the Number (Official Android APK)." />
+  <link rel="icon" type="image/png" href="zicon.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* =========================================================
+       1. SCI-FI STUDIO PALETTES (DEFAULT: #100D1F · #A855F7 · #22D3EE)
+       ========================================================= */
+    :root,
+    [data-theme="cyber-violet"] {
+      --bg-void: #100D1F;
+      --bg-deep: #16122B;
+      --bg-card: rgba(24, 19, 46, 0.82);
+      --primary: #A855F7;
+      --primary-glow: rgba(168, 85, 247, 0.45);
+      --secondary: #22D3EE;
+      --secondary-glow: rgba(34, 211, 238, 0.35);
+      --btn-grad: linear-gradient(135deg, #6D28D9 0%, #A855F7 55%, #2563EB 100%);
+      --hud-line: rgba(168, 85, 247, 0.32);
+      --hud-cyan: rgba(34, 211, 238, 0.30);
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --gold: #FBBF24;
+      --teal-tile: #2DD4BF;
+      --pink-tile: #F472B6;
+    }
+
+    /* Optional Palette 2: Black + Gold */
+    [data-theme="obsidian-gold"] {
+      --bg-void: #08090C;
+      --bg-deep: #11131A;
+      --bg-card: rgba(20, 23, 32, 0.85);
+      --primary: #F59E0B;
+      --primary-glow: rgba(245, 158, 11, 0.42);
+      --secondary: #38BDF8;
+      --secondary-glow: rgba(56, 189, 248, 0.32);
+      --btn-grad: linear-gradient(135deg, #B45309 0%, #F59E0B 60%, #FBBF24 100%);
+      --hud-line: rgba(245, 158, 11, 0.32);
+      --hud-cyan: rgba(56, 189, 248, 0.28);
+    }
+
+    /* Optional Palette 3: Black + Red */
+    [data-theme="crimson-ops"] {
+      --bg-void: #0B070B;
+      --bg-deep: #160D14;
+      --bg-card: rgba(28, 15, 24, 0.85);
+      --primary: #EF4444;
+      --primary-glow: rgba(239, 68, 68, 0.45);
+      --secondary: #FB7185;
+      --secondary-glow: rgba(251, 113, 133, 0.32);
+      --btn-grad: linear-gradient(135deg, #991B1B 0%, #EF4444 60%, #E11D48 100%);
+      --hud-line: rgba(239, 68, 68, 0.34);
+      --hud-cyan: rgba(251, 113, 133, 0.28);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg-void);
+      background-image:
+        radial-gradient(circle at 75% 28%, var(--primary-glow), transparent 42%),
+        radial-gradient(circle at 20% 18%, var(--secondary-glow), transparent 38%),
+        radial-gradient(circle at 50% 90%, rgba(37, 99, 235, 0.14), transparent 48%);
+      color: var(--text-main);
+      line-height: 1.6;
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image:
+        linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 56px 56px;
+    }
+
+    /* =========================================================
+       2. CENTERED ANIMATED LOADING OVERLAY (FIXED)
+       ========================================================= */
+    #loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg-void);
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px;
+      gap: 22px;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+
+    #loading-overlay.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loader-ring-wrap {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+    }
+
+    .loader-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      border-top-color: var(--secondary);
+      border-bottom-color: var(--primary);
+      animation: spinHud 1.5s linear infinite;
+      box-shadow: 0 0 28px var(--primary-glow);
+    }
+
+    @keyframes spinHud {
+      to { transform: rotate(360deg); }
+    }
+
+    .loader-emblem {
+      width: 70px;
+      height: 70px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 18px var(--secondary-glow));
+    }
+
+    .loader-text-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .loader-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 4px;
+      color: var(--text-main);
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .loader-sub {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--secondary);
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    /* =========================================================
+       3. STICKY SCI-FI NAVIGATION BAR
+       ========================================================= */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(16, 13, 31, 0.86);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--hud-line);
+      padding: 12px 20px;
+    }
+
+    .nav-container {
+      max-width: 1220px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .brand-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .nav-logo {
+      height: 38px;
+      width: auto;
+      max-width: 175px;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px var(--primary-glow));
+    }
+
+    .brand-fallback {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 800;
+      font-size: 1.05rem;
+      letter-spacing: 3px;
+      color: var(--text-main);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.96rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s, text-shadow 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--secondary);
+      text-shadow: 0 0 12px var(--secondary-glow);
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .theme-pills {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--hud-line);
+      padding: 5px 9px;
+      border-radius: 99px;
+    }
+
+    .theme-dot {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid rgba(255, 255, 255, 0.35);
+      transition: transform 0.15s;
+    }
+
+    .theme-dot:hover {
+      transform: scale(1.2);
+    }
+
+    /* =========================================================
+       4. CHAMFERED SCI-FI BUTTONS
+       ========================================================= */
+    .btn-cyber {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 13px 26px;
+      color: #FFFFFF;
+      background: var(--btn-grad);
+      border: 1px solid var(--secondary);
+      clip-path: polygon(12px 0, 100% 0, 100% calc(100% - 12px), calc(100% - 12px) 100%, 0 100%, 0 12px);
+      box-shadow: 0 0 24px var(--primary-glow);
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform 0.15s ease, filter 0.2s ease, box-shadow 0.2s ease;
+      user-select: none;
+    }
+
+    .btn-cyber:hover {
+      filter: brightness(1.12);
+      transform: translateY(-2px);
+      box-shadow: 0 0 32px var(--primary-glow), 0 0 14px var(--secondary-glow);
+    }
+
+    .btn-cyber-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.96rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 12px 24px;
+      color: var(--secondary);
+      background: rgba(16, 13, 31, 0.75);
+      border: 1px solid var(--secondary);
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 12px);
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-cyber-outline:hover {
+      background: rgba(34, 211, 238, 0.14);
+      color: #FFFFFF;
+      box-shadow: 0 0 18px var(--secondary-glow);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1220px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .view-section {
+      display: none;
+      animation: fadeView 0.35s ease;
+    }
+
+    .view-section.active {
+      display: block;
+    }
+
+    @keyframes fadeView {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* =========================================================
+       5. HUD FRAME & CINEMATIC HERO (COLLISION-FREE FLEX LAYOUT)
+       ========================================================= */
+    .hero-wrapper {
+      padding: 28px 0 44px;
+    }
+
+    .hud-frame {
+      position: relative;
+      border: 1px solid var(--hud-line);
+      background: var(--bg-deep);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      clip-path: polygon(
+        0 0,
+        calc(100% - 28px) 0,
+        100% 28px,
+        100% 100%,
+        28px 100%,
+        0 calc(100% - 28px)
+      );
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.7), inset 0 0 40px rgba(168, 85, 247, 0.08);
+    }
+
+    .hero-backdrop-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0.42;
+      filter: contrast(1.08) saturate(1.15);
+      z-index: 0;
+    }
+
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at 72% 45%, rgba(168, 85, 247, 0.22) 0%, transparent 50%),
+        linear-gradient(90deg, rgba(16, 13, 31, 0.95) 0%, rgba(16, 13, 31, 0.74) 55%, rgba(16, 13, 31, 0.5) 100%),
+        linear-gradient(180deg, rgba(16, 13, 31, 0.3) 0%, rgba(16, 13, 31, 0.96) 100%);
+      z-index: 1;
+    }
+
+    .hud-circle {
+      position: absolute;
+      right: 6%;
+      top: 44%;
+      transform: translateY(-50%);
+      width: 360px;
+      height: 360px;
+      border-radius: 50%;
+      border: 1px solid var(--hud-cyan);
+      box-shadow: 0 0 40px var(--primary-glow), inset 0 0 40px var(--secondary-glow);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .hud-circle::after {
+      content: "";
+      position: absolute;
+      inset: 26px;
+      border-radius: 50%;
+      border: 1px dashed var(--hud-line);
+    }
+
+    .hero-grid {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      padding: 48px 32px 36px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      align-items: center;
+    }
+
+    @media (min-width: 860px) {
+      .hero-grid {
+        grid-template-columns: 1.25fr 0.75fr;
+        padding: 56px 44px 44px;
+      }
+    }
+
+    .cyber-overline {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--secondary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .cyber-overline::before {
+      content: "";
+      width: 28px;
+      height: 2px;
+      background: var(--secondary);
+      box-shadow: 0 0 8px var(--secondary);
+      flex-shrink: 0;
+    }
+
+    .hero-main-title {
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 900;
+      font-size: clamp(1.9rem, 4.6vw, 3.45rem);
+      line-height: 1.14;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      text-shadow: 0 8px 30px rgba(0, 0, 0, 0.8);
+    }
+
+    .hero-main-title span {
+      background: linear-gradient(90deg, #FFFFFF 0%, var(--secondary) 55%, var(--primary) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-desc {
+      color: #CBD5E1;
+      font-size: 1.03rem;
+      max-width: 560px;
+      margin-bottom: 28px;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .hero-visual-focal {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .hero-emblem-card {
+      background: rgba(16, 13, 31, 0.82);
+      border: 1px solid var(--hud-cyan);
+      padding: 24px 20px;
+      border-radius: 18px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 36px var(--primary-glow);
+      max-width: 340px;
+      width: 100%;
+    }
+
+    .hero-emblem-card img {
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 0 16px var(--secondary-glow));
+    }
+
+    .emblem-caption {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      font-size: 0.82rem;
+      color: var(--secondary);
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      text-transform: uppercase;
+    }
+
+    /* Separate Bottom Telemetry Strip (Never Overlaps Emblem Card) */
+    .hud-corner-meta {
+      position: relative;
+      z-index: 2;
+      background: rgba(10, 8, 20, 0.88);
+      border-top: 1px solid var(--hud-line);
+      padding: 14px 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.82rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .hud-corner-meta strong {
+      color: var(--secondary);
+      margin-left: 6px;
+    }
+
+    /* =========================================================
+       6. STUDIO GAMES CATALOG SECTION (FIXED HEADER ALIGNMENT)
+       ========================================================= */
+    .section-block {
+      padding: 48px 0;
+    }
+
+    .section-head {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 28px;
+      border-left: 3px solid var(--primary);
+      padding-left: 16px;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(1.35rem, 3vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .section-subtitle {
+      color: var(--text-muted);
+      font-size: 0.96rem;
+    }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 26px;
+    }
+
+    .cyber-card {
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--hud-line);
+      backdrop-filter: blur(12px);
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 18px 100%, 0 calc(100% - 18px));
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: transform 0.22s ease, border-color 0.22s ease, box-shadow 0.22s ease;
+    }
+
+    .cyber-card.interactive {
+      cursor: pointer;
+    }
+
+    .cyber-card.interactive:hover {
+      transform: translateY(-5px);
+      border-color: var(--secondary);
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.65), 0 0 25px var(--primary-glow);
+    }
+
+    .card-banner-box {
+      position: relative;
+      aspect-ratio: 1024 / 500;
+      background: #0D0B18;
+      overflow: hidden;
+      border-bottom: 1px solid var(--hud-line);
+    }
+
+    .card-banner-box img.banner {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.35s ease;
+    }
+
+    .cyber-card.interactive:hover .card-banner-box img.banner {
+      transform: scale(1.04);
+    }
+
+    .card-floating-icon {
+      position: absolute;
+      bottom: 12px;
+      left: 16px;
+      width: 66px;
+      height: 66px;
+      border-radius: 14px;
+      border: 2px solid var(--secondary);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.75);
+      object-fit: cover;
+      background: var(--bg-void);
+    }
+
+    .card-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+    }
+
+    .status-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .hud-badge {
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 700;
+      font-size: 0.78rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      padding: 4px 11px;
+      border-radius: 4px;
+    }
+
+    .hud-badge.cyan {
+      background: rgba(34, 211, 238, 0.14);
+      color: var(--secondary);
+      border: 1px solid var(--hud-cyan);
+    }
+
+    .hud-badge.violet {
+      background: rgba(168, 85, 247, 0.16);
+      color: #D8B4FE;
+      border: 1px solid var(--hud-line);
+    }
+
+    .hud-badge.gold {
+      background: rgba(251, 191, 36, 0.14);
+      color: var(--gold);
+      border: 1px solid rgba(251, 191, 36, 0.4);
+    }
+
+    .card-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+    }
+
+    .card-text {
+      color: var(--text-muted);
+      font-size: 0.94rem;
+      flex: 1;
+    }
+
+    .spec-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .spec-tag {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #CBD5E1;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 3px 10px;
+    }
+
+    /* =========================================================
+       7. NUMBER BATTLE FULL DETAILS & APK DOWNLOAD VIEW
+       ========================================================= */
+    .details-header-card {
+      background: var(--bg-card);
+      border: 1px solid var(--secondary);
+      clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 24px, 100% 100%, 24px 100%, 0 calc(100% - 24px));
+      overflow: hidden;
+      margin-bottom: 36px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), 0 0 30px var(--primary-glow);
+    }
+
+    .details-top-banner {
+      width: 100%;
+      max-height: 390px;
+      object-fit: cover;
+      display: block;
+      border-bottom: 1px solid var(--hud-line);
+    }
+
+    .details-main-bar {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    @media (min-width: 800px) {
+      .details-main-bar {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+
+    .details-title-group {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .details-icon-lg {
+      width: 92px;
+      height: 92px;
+      border-radius: 20px;
+      border: 2px solid var(--secondary);
+      box-shadow: 0 0 22px var(--secondary-glow);
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .details-download-col {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      min-width: 280px;
+    }
+
+    .telemetry-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      padding: 14px 28px;
+      background: rgba(10, 8, 20, 0.85);
+      border-top: 1px solid var(--hud-line);
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .telemetry-strip strong {
+      color: var(--secondary);
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+      gap: 20px;
+      margin-bottom: 36px;
+    }
+
+    .hud-box {
+      background: var(--bg-card);
+      border: 1px solid var(--hud-line);
+      padding: 24px;
+      clip-path: polygon(0 0, calc(100% - 14px) 0, 100% 14px, 100% 100%, 0 100%);
+    }
+
+    .hud-box h3 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.05rem;
+      color: var(--secondary);
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+
+    .tile-row {
+      display: flex;
+      gap: 8px;
+      margin: 14px 0;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .demo-tile {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: #F1F5F9;
+      color: #0F172A;
+      border: 2px solid #94A3B8;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s;
+    }
+
+    .demo-tile:active {
+      transform: scale(0.92);
+    }
+
+    .demo-tile.state-1 {
+      background: var(--teal-tile);
+      color: #0F172A;
+      border-color: #99F6E4;
+      box-shadow: 0 0 12px rgba(45, 212, 191, 0.5);
+    }
+
+    .demo-tile.state-2 {
+      background: var(--pink-tile);
+      color: #0F172A;
+      border-color: #FBCFE8;
+      box-shadow: 0 0 12px rgba(244, 114, 182, 0.5);
+    }
+
+    .policy-frame {
+      background: var(--bg-card);
+      border: 1px solid var(--hud-line);
+      padding: 30px;
+      font-size: 0.94rem;
+      color: #E2E8F0;
+    }
+
+    .policy-frame h3 {
+      font-family: 'Orbitron', sans-serif;
+      color: var(--secondary);
+      font-size: 1rem;
+      margin: 18px 0 6px;
+    }
+
+    footer {
+      border-top: 1px solid var(--hud-line);
+      padding: 40px 0;
+      margin-top: 48px;
+      text-align: center;
+      color: var(--text-muted);
+      font-family: 'Rajdhani', sans-serif;
+      letter-spacing: 1.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 1. Centered Animated Sci-Fi Loading Overlay (zicon.png) -->
+  <div id="loading-overlay">
+    <div class="loader-ring-wrap">
+      <div class="loader-ring"></div>
+      <img src="zicon.png" alt="ZORVEXA" class="loader-emblem" onerror="this.style.display='none'" />
+    </div>
+    <div class="loader-text-box">
+      <div class="loader-title">ZORVEXA STUDIOS</div>
+      <div class="loader-sub">INITIALIZING SYSTEM...</div>
+    </div>
+  </div>
+
+  <!-- 2. Sticky Top HUD Navigation Bar (studio_emblem.png) -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a class="brand-link" onclick="showHomeView()">
+        <img src="studio_emblem.png" alt="ZORVEXA STUDIOS" class="nav-logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';" />
+        <span class="brand-fallback" style="display:none;">ZORVEXA STUDIOS</span>
+      </a>
+
+      <nav class="nav-links">
+        <a onclick="showHomeView()">Studio</a>
+        <a onclick="showHomeView('#games')">Games</a>
+        <a onclick="showGameDetailsView()">Number Battle</a>
+        <a onclick="showHomeView('#about')">About</a>
+        <a href="#privacy-policy">Privacy</a>
+      </nav>
+
+      <div class="nav-right">
+        <div class="theme-pills" title="Switch Studio Color Palette">
+          <span class="theme-dot" style="background:linear-gradient(135deg,#A855F7,#22D3EE);" onclick="setTheme('cyber-violet')" title="Sci-Fi Violet & Cyan (#100D1F)"></span>
+          <span class="theme-dot" style="background:linear-gradient(135deg,#111,#F59E0B);" onclick="setTheme('obsidian-gold')" title="Black & Gold"></span>
+          <span class="theme-dot" style="background:linear-gradient(135deg,#111,#EF4444);" onclick="setTheme('crimson-ops')" title="Black & Red"></span>
+        </div>
+        <button class="btn-cyber" style="padding:9px 18px; font-size:0.78rem;" onclick="showGameDetailsView()">Download</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- =========================================================
+       VIEW 1: STUDIO HOMEPAGE (#home-view)
+       ========================================================= -->
+  <main id="home-view" class="view-section active">
+    <div class="container">
+
+      <!-- Sci-Fi HUD Frame + Full-Bleed Hero (studio_hero.png) -->
+      <section class="hero-wrapper">
+        <div class="hud-frame">
+          <img src="studio_hero.png" alt="ZORVEXA STUDIOS Hero" class="hero-backdrop-img" onerror="this.style.display='none'" />
+          <div class="hero-vignette"></div>
+          <div class="hud-circle"></div>
+
+          <div class="hero-grid">
+            <div>
+              <div class="cyber-overline">WELCOME TO ZORVEXA STUDIOS</div>
+              <h1 class="hero-main-title">
+                Where Logic Rises &amp; <span>Challengers Think</span>
+              </h1>
+              <p class="hero-desc">
+                An independent solo game studio engineering high-craft deduction, puzzle, and tactical mind games. Zero ads, zero data tracking, 100% offline precision.
+              </p>
+              <div class="hero-cta-row">
+                <button class="btn-cyber" onclick="showGameDetailsView()">Play For Free (APK)</button>
+                <a href="#games" class="btn-cyber-outline">Discover Games</a>
+              </div>
+            </div>
+
+            <div class="hero-visual-focal">
+              <div class="hero-emblem-card">
+                <img src="studio_emblem.png" alt="ZORVEXA STUDIOS Emblem" onerror="this.src='zicon.png'" />
+                <div class="emblem-caption">
+                  FLAGSHIP RELEASE // NUMBER BATTLE
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dedicated Bottom Status Bar (No Overlap on Mobile or Desktop) -->
+          <div class="hud-corner-meta">
+            <div>STUDIO ARCHITECTURE: <strong>SOLO INDIE STUDIO</strong></div>
+            <div>DEBUT TITLE: <strong>NUMBER BATTLE: GUESS THE NUMBER</strong></div>
+            <div>BUILD STATUS: <strong>DIRECT APK V1.0.0 LIVE</strong></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Studio Games Catalog (#games) -->
+      <section id="games" class="section-block">
+        <div class="section-head">
+          <div class="cyber-overline" style="margin-bottom:2px;">OFFICIAL ROSTER</div>
+          <h2 class="section-title">Studio Games Catalog</h2>
+          <p class="section-subtitle">Click on a game below to view full game details and download the official Android installer.</p>
+        </div>
+
+        <div class="games-grid">
+          <!-- Game #1: Number Battle (First in List) -->
+          <article class="cyber-card interactive" onclick="showGameDetailsView()">
+            <div class="card-banner-box">
+              <img src="game_banner.png" alt="Number Battle Banner" class="banner" onerror="this.style.display='none'" />
+              <img src="game_icon.png" alt="Number Battle Icon" class="card-floating-icon" onerror="this.src='zicon.png'" />
+            </div>
+            <div class="card-body">
+              <div class="status-pills">
+                <span class="hud-badge cyan">✔ Direct APK Ready (v1.0.0)</span>
+                <span class="hud-badge gold">🕒 Coming Soon to Play Store</span>
+              </div>
+              <h3 class="card-title">Number Battle: Guess the Number</h3>
+              <p class="card-text">
+                Crack the hidden 3-digit or 4-digit secret code using Position (P) and Number (N) deduction clues, an interactive 0–9 color scratchpad, and Pinned Solution auto-fill slots.
+              </p>
+              <div class="spec-tags">
+                <span class="spec-tag">1P vs CPU</span>
+                <span class="spec-tag">2P Pass &amp; Play</span>
+                <span class="spec-tag">2P Manual Board</span>
+                <span class="spec-tag">100% Offline</span>
+              </div>
+              <div style="margin-top:8px;">
+                <span class="btn-cyber" style="width:100%;">View Game Details &amp; Download →</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Game #2: Future Studio Slot -->
+          <article class="cyber-card" style="opacity:0.86;">
+            <div class="card-banner-box" style="display:flex; align-items:center; justify-content:center; background:radial-gradient(circle, rgba(168,85,247,0.18), #0B0914);">
+              <img src="zicon.png" alt="ZORVEXA Upcoming" style="width:76px; height:76px; object-fit:contain; opacity:0.65;" onerror="this.style.display='none'" />
+            </div>
+            <div class="card-body">
+              <div class="status-pills">
+                <span class="hud-badge violet">In Concept // Project #02</span>
+              </div>
+              <h3 class="card-title">Upcoming Logic Title</h3>
+              <p class="card-text">
+                The next standalone brain-training puzzle game from ZORVEXA STUDIOS is currently in concept design following the release of Number Battle.
+              </p>
+              <div class="spec-tags">
+                <span class="spec-tag">ZORVEXA Core</span>
+                <span class="spec-tag">Ad-Free</span>
+                <span class="spec-tag">Offline Architecture</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- About the Solo Developer Studio (#about) -->
+      <section id="about" class="section-block">
+        <div class="hud-box" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:28px; align-items:center;">
+          <div style="text-align:center; padding:18px; background:rgba(10,8,20,0.65); border:1px solid var(--hud-line);">
+            <img src="studio_emblem.png" alt="ZORVEXA STUDIOS" style="width:100%; max-width:260px; height:auto; object-fit:contain;" onerror="this.src='zicon.png'" />
+          </div>
+          <div>
+            <div class="cyber-overline">ABOUT THE STUDIO</div>
+            <h2 class="section-title" style="margin-bottom:12px;">Focused Engineering. Zero Bloat.</h2>
+            <p style="color:var(--text-muted); margin-bottom:10px;">
+              <strong>ZORVEXA STUDIOS</strong> is an independent solo game studio built on a simple principle: mobile games should challenge your mind without harvesting your data or interrupting your focus.
+            </p>
+            <p style="color:var(--text-muted);">
+              Every release is crafted with custom procedural audio synthesis, tactile haptic feedback, instant local match saving, and clean user interfaces.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- =========================================================
+       VIEW 2: NUMBER BATTLE DETAILS & APK DOWNLOAD (#game-details-view)
+       ========================================================= -->
+  <section id="game-details-view" class="view-section">
+    <div class="container" style="padding-top:24px;">
+
+      <div style="margin-bottom:20px;">
+        <button class="btn-cyber-outline" onclick="showHomeView('#games')">← Back to Studio Games</button>
+      </div>
+
+      <!-- Main Game Header & Direct APK Download -->
+      <div class="details-header-card">
+        <img src="game_banner.png" alt="Number Battle Feature Graphic" class="details-top-banner" onerror="this.style.display='none'" />
+
+        <div class="details-main-bar">
+          <div class="details-title-group">
+            <img src="game_icon.png" alt="Number Battle Icon" class="details-icon-lg" onerror="this.src='zicon.png'" />
+            <div>
+              <div class="status-pills" style="margin-bottom:8px;">
+                <span class="hud-badge cyan">OFFICIAL STUDIO APK</span>
+                <span class="hud-badge gold">🕒 Coming Soon to Google Play Store</span>
+              </div>
+              <h1 class="section-title" style="font-size:clamp(1.4rem, 3.5vw, 2.2rem);">Number Battle: Guess the Number</h1>
+              <p style="color:var(--secondary); font-family:'Rajdhani',sans-serif; font-weight:700; letter-spacing:2px; text-transform:uppercase;">
+                BY ZORVEXA STUDIOS // LOGIC DEDUCTION GAME
+              </p>
+            </div>
+          </div>
+
+          <div class="details-download-col">
+            <a href="Number_battle.apk" download="Number_battle.apk" class="btn-cyber" style="text-align:center;">
+              ⬇ Download APK (v1.0.0)
+            </a>
+            <div style="text-align:center; font-size:0.8rem; color:var(--text-muted);">
+              File: <code>Number_battle.apk</code> • Direct Android Install
+            </div>
+          </div>
+        </div>
+
+        <div class="telemetry-strip">
+          <span>VERSION: <strong>1.0.0</strong></span>
+          <span>PACKAGE: <strong>com.zorvexa.numberbattle</strong></span>
+          <span>PLATFORM: <strong>ANDROID 8.0+</strong></span>
+          <span>PRIVACY: <strong>100% OFFLINE / AD-FREE</strong></span>
+        </div>
+      </div>
+
+      <!-- How to Play & Interactive Demo -->
+      <div class="section-head">
+        <div class="cyber-overline" style="margin-bottom:2px;">GAMEPLAY RULES</div>
+        <h2 class="section-title">How P &amp; N Deduction Works</h2>
+      </div>
+
+      <div class="feature-grid">
+        <div class="hud-box">
+          <h3>01 // DECODING 'P' AND 'N' CLUES</h3>
+          <p style="color:var(--text-muted); font-size:0.94rem; margin-bottom:12px;">
+            • <strong>N (Number):</strong> How many digits in your guess exist inside the secret number (in ANY position).<br/>
+            • <strong>P (Position):</strong> How many of those correct digits are standing in the EXACT right position.
+          </p>
+          <div style="background:rgba(10,8,20,0.8); padding:14px; border:1px solid var(--hud-cyan); font-size:0.9rem;">
+            <div>Secret = <strong>4 8 2</strong> &nbsp;|&nbsp; Guess = <strong>4 2 9</strong> &nbsp;→&nbsp; <strong style="color:var(--secondary);">P: 1 &nbsp;|&nbsp; N: 2</strong></div>
+            <div style="color:var(--text-muted); font-size:0.84rem; margin-top:4px;">
+              '4' and '2' are both in the secret (N=2), and '4' is in the exact 1st spot (P=1).
+            </div>
+          </div>
+        </div>
+
+        <div class="hud-box">
+          <h3>02 // INTERACTIVE 0–9 SCRATCHPAD (TAP TILES)</h3>
+          <p style="color:var(--text-muted); font-size:0.94rem;">
+            Tap digits on the in-game color bar to mark your deductions: <strong>White</strong> (Untested) → <strong>Teal</strong> (Confirmed) → <strong>Pink</strong> (Eliminated). Try tapping below:
+          </p>
+          <div class="tile-row">
+            <span class="demo-tile state-1" onclick="cycleDemoTile(this)">4</span>
+            <span class="demo-tile state-2" onclick="cycleDemoTile(this)">1</span>
+            <span class="demo-tile state-2" onclick="cycleDemoTile(this)">9</span>
+            <span class="demo-tile" onclick="cycleDemoTile(this)">8</span>
+            <span class="demo-tile" onclick="cycleDemoTile(this)">2</span>
+          </div>
+          <p style="color:var(--text-muted); font-size:0.85rem;">
+            📌 <strong>Pinned Solution Slots:</strong> Lock confirmed digits into the top <code>[?]</code> boxes to auto-fill every future guess!
+          </p>
+        </div>
+      </div>
+
+      <!-- 6 Core Features -->
+      <div class="section-head">
+        <div class="cyber-overline" style="margin-bottom:2px;">SYSTEM CAPABILITIES</div>
+        <h2 class="section-title">Game Features</h2>
+      </div>
+
+      <div class="feature-grid">
+        <div class="hud-box">
+          <h3>1P vs CPU Mode</h3>
+          <p style="color:var(--text-muted); font-size:0.93rem;">Challenge the phone's secret number generator in 3-Digit or 4-Digit mode and track your fewest-turn records.</p>
+        </div>
+        <div class="hud-box">
+          <h3>2P Pass &amp; Play + Privacy Curtain</h3>
+          <p style="color:var(--text-muted); font-size:0.93rem;">Duel a friend on a single phone with isolated color notes and a full-screen Privacy Curtain between turns.</p>
+        </div>
+        <div class="hud-box">
+          <h3>2P Manual Paperless Board</h3>
+          <p style="color:var(--text-muted); font-size:0.93rem;">Playing face-to-face? Left column auto-scores opponent guesses while Right column logs your guesses and P &amp; N clues.</p>
+        </div>
+        <div class="hud-box">
+          <h3>Inspect Board &amp; Secret</h3>
+          <p style="color:var(--text-muted); font-size:0.93rem;">Tap "Inspect Board &amp; Number" after winning a match to review the full guess history and secret number.</p>
+        </div>
+        <div class="hud-box">
+          <h3>4 Themes + Synth Audio</h3>
+          <p style="color:var(--text-muted); font-size:0.93rem;">Switch themes anytime with real-time synthesized sound effects, haptics, and automatic match saving.</p>
+        </div>
+        <div class="hud-box">
+          <h3>How to Install on Android</h3>
+          <p style="color:var(--text-muted); font-size:0.93rem;">1. Tap Download APK above. 2. Open <code>Number_battle.apk</code> and allow browser install if prompted. 3. Launch and play offline!</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- =========================================================
+       PRIVACY POLICY (Google Play Console Compliant #privacy-policy)
+       ========================================================= -->
+  <section id="privacy-policy" class="section-block">
+    <div class="container">
+      <div class="policy-frame">
+        <div class="cyber-overline">LEGAL &amp; COMPLIANCE</div>
+        <h2 class="section-title" style="margin-bottom:6px;">Privacy Policy — Number Battle: Guess the Number</h2>
+        <p style="color:var(--text-muted); font-size:0.85rem; margin-bottom:14px;">Effective Date: November 2026 • Developer: ZORVEXA STUDIOS</p>
+
+        <h3>1. Developer &amp; Application Scope</h3>
+        <p>This Privacy Policy governs the mobile game <strong>"Number Battle: Guess the Number"</strong> (Package ID: <code>com.zorvexa.numberbattle</code>), developed and published by <strong>ZORVEXA STUDIOS</strong>.</p>
+
+        <h3>2. Zero Data Collection &amp; Offline Operation</h3>
+        <p><strong>Number Battle: Guess the Number</strong> operates 100% offline. We do <strong>NOT</strong> collect, access, record, transmit, or share any personal or sensitive user data, device identifiers, location coordinates, or contacts. The game integrates zero third-party advertising or analytics SDKs.</p>
+
+        <h3>3. Local Storage &amp; Data Deletion</h3>
+        <p>Game preferences, best turn statistics, and active match states are stored strictly locally on your device (<code>user://number_battle_save.cfg</code>) and never leave your phone. You can erase all local data at any time via the in-game "Reset Saved Best Scores" option, clearing app storage in Android Settings, or uninstalling the application.</p>
+
+        <h3>4. Contact Developer</h3>
+        <p>For official support or privacy inquiries, contact <strong>ZORVEXA STUDIOS</strong> at: <a href="mailto:zorvexastudios@gmail.com" style="color:var(--secondary);">artestogamer@gmail.com</a></p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <img src="studio_emblem.png" alt="ZORVEXA STUDIOS" style="height:34px; width:auto; margin-bottom:12px;" onerror="this.style.display='none'" />
+      <div>© 2026 <strong>ZORVEXA STUDIOS</strong> // ALL RIGHTS RESERVED</div>
+    </div>
+  </footer>
+
+  <script>
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        const loader = document.getElementById('loading-overlay');
+        if (loader) loader.classList.add('hidden');
+      }, 650);
+    });
+
+    function setTheme(themeName) {
+      document.documentElement.setAttribute('data-theme', themeName);
+    }
+
+    function showGameDetailsView() {
+      document.getElementById('home-view').classList.remove('active');
+      document.getElementById('game-details-view').classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      history.replaceState(null, '', '#number-battle');
+    }
+
+    function showHomeView(anchor) {
+      document.getElementById('game-details-view').classList.remove('active');
+      document.getElementById('home-view').classList.add('active');
+      if (anchor) {
+        setTimeout(() => {
+          const el = document.querySelector(anchor);
+          if (el) el.scrollIntoView({ behavior: 'smooth' });
+        }, 50);
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        history.replaceState(null, '', window.location.pathname);
+      }
+    }
+
+    function cycleDemoTile(tile) {
+      if (tile.classList.contains('state-1')) {
+        tile.classList.remove('state-1');
+        tile.classList.add('state-2');
+      } else if (tile.classList.contains('state-2')) {
+        tile.classList.remove('state-2');
+      } else {
+        tile.classList.add('state-1');
+      }
+    }
+
+    if (window.location.hash === '#number-battle') {
+      showGameDetailsView();
+    }
+  </script>
+</body>
+</html>
